@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREATE A ROOM</title>
+</head>
+<body>
+    <h1>Hello {{ username }}</h1>
+    <h2>Room code: {{ code }}</h2>
+    <input type="hidden" id="room" value="{{ code }}">
+    <button onclick="startGame()">Start Game</button>
+
+    <div id="messages"></div>
+    <div id="word"></div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        function startGame() {
+            const room = document.getElementById('room').value;
+            socket.emit('start_game', { room: room });
+        }
+
+        socket.on('new_word', (word) => {
+            document.getElementById('word').innerText = `The word is: ${word}`;
+        });
+
+        socket.on('message', (msg) => {
+            const p = document.createElement('p');
+            p.innerText = msg;
+            document.getElementById('messages').appendChild(p);
+        });
+    </script>
+</body>
+</html>

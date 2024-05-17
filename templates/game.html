@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHO AM I</title>
+</head>
+<style>
+
+    #word {
+        font-size: 70px;
+        text-align: center;
+    }
+</style>
+<body>
+    <div id="container">
+        <h1>Hello {{ username }}</h1>
+        <h2>Room: {{ room }}</h2>
+
+        <div id="messages"></div>
+        
+
+        <button onclick="startGame()">Start Game</button>    
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        function joinRoom() {
+            const username = "{{ username }}";
+            const room = "{{ room }}";
+            socket.emit('join_room', { username: username, room: room });
+        }
+
+        joinRoom(); // Automatically join the room when the page loads
+
+        function startGame() {
+            const room = "{{ room }}";
+            socket.emit('start_game', { room: room });
+        }
+
+        socket.on('message', (data) => {
+            const messages = document.getElementById('messages');
+            const p = document.createElement('p');
+            p.textContent = data;
+            messages.appendChild(p);
+        });
+
+        socket.on('new_word', (data) => {
+            const containerElement = document.getElementById('container')
+            containerElement.innerHTML = `<h1 id="word">${data.word}</h1>`
+        });
+
+        socket.on('error', (data) => {
+            const messages = document.getElementById('messages');
+            messages.innerHTML += `<p style="color: red;">${data.message}</p>`;
+        });
+    </script>
+</body>
+</html>

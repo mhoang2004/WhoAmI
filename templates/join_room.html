@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOIN A ROOM</title>
+</head>
+<body>
+    <h1>Hello {{ username }}</h1>
+    <label for="room">Room code:</label>
+    <input type="text" id="room" name="room" required />
+    <button onclick="joinRoom()">Join</button>
+
+    <div id="messages"></div>
+    <div id="word"></div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        function joinRoom() {
+            const room = document.getElementById('room').value;
+            socket.emit('join_room', { username: '{{ username }}', room: room });
+        }
+
+        socket.on('new_word', (word) => {
+            document.getElementById('word').innerText = `The word is: ${word}`;
+        });
+
+        socket.on('message', (msg) => {
+            const p = document.createElement('p');
+            p.innerText = msg;
+            document.getElementById('messages').appendChild(p);
+        });
+    </script>
+</body>
+</html>
